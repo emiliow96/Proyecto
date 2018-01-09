@@ -30,7 +30,7 @@ public class JVPrincipal {
 	// Apartado 8:
 	static final int TAMAÑO_MUNDO = 12;
 	static final int CICLOS_SIMULACION = 35;
-	static byte[][] mundo;
+	static byte[][] espacioMundo;
 	// Apartado 8+:
 	enum FormaEspacio { PLANO1, PLANO2, ESFERICO }
 	static final FormaEspacio TIPO_MUNDO = FormaEspacio.ESFERICO;
@@ -103,7 +103,7 @@ public class JVPrincipal {
 
 		for (int i = 0; i < TAMAÑO_MUNDO; i++) {
 			for (int j = 0; j < TAMAÑO_MUNDO; j++) {		
-				System.out.print((mundo[i][j] == 1) ? "|o" : "| ");
+				System.out.print((espacioMundo[i][j] == 1) ? "|o" : "| ");
 			}
 			System.out.println("|");
 		}
@@ -142,19 +142,19 @@ public class JVPrincipal {
 				}
 
 				int vecinas = 0;							
-				vecinas += mundo[filaSuperior][colAnterior];		// Celda NO
-				vecinas += mundo[filaSuperior][j];					// Celda N		NO | N | NE
-				vecinas += mundo[filaSuperior][colPosterior];		// Celda NE   	-----------
-				vecinas += mundo[i][colPosterior];					// Celda E		 O | * | E
-				vecinas += mundo[filaInferior][colPosterior];		// Celda SE	  	----------- 
-				vecinas += mundo[filaInferior][j]; 					// Celda S		SO | S | SE
-				vecinas += mundo[filaInferior][colAnterior]; 		// Celda SO 
-				vecinas += mundo[i][colAnterior];					// Celda O           			                                     	
+				vecinas += espacioMundo[filaSuperior][colAnterior];		// Celda NO
+				vecinas += espacioMundo[filaSuperior][j];					// Celda N		NO | N | NE
+				vecinas += espacioMundo[filaSuperior][colPosterior];		// Celda NE   	-----------
+				vecinas += espacioMundo[i][colPosterior];					// Celda E		 O | * | E
+				vecinas += espacioMundo[filaInferior][colPosterior];		// Celda SE	  	----------- 
+				vecinas += espacioMundo[filaInferior][j]; 					// Celda S		SO | S | SE
+				vecinas += espacioMundo[filaInferior][colAnterior]; 		// Celda SO 
+				vecinas += espacioMundo[i][colAnterior];					// Celda O           			                                     	
 
 				actualizarCelda(nuevoEstado, i, j, vecinas);
 			}
 		}
-		mundo = nuevoEstado;
+		espacioMundo = nuevoEstado;
 	}
 
 	/**
@@ -181,7 +181,7 @@ public class JVPrincipal {
 				actualizarCelda(nuevoEstado, i, j, vecinas);
 			}
 		}
-		mundo = nuevoEstado;
+		espacioMundo = nuevoEstado;
 	}
 
 	/**
@@ -201,7 +201,7 @@ public class JVPrincipal {
 		if (vecinas == 3) {
 			nuevoEstado[fila][col] = 1; 				// Pasa a estar viva o se mantiene.
 		}
-		if (vecinas == 2 && mundo[fila][col] == 1) {
+		if (vecinas == 2 && espacioMundo[fila][col] == 1) {
 			nuevoEstado[fila][col] = 1; 				// Se mantiene viva...
 		}	
 	}
@@ -215,7 +215,7 @@ public class JVPrincipal {
 	 */
 	static byte celdaOeste(int fila, int col) {
 		if (col-1 >= 0) {
-			return mundo[fila][col-1]; 	// Celda O.
+			return espacioMundo[fila][col-1]; 	// Celda O.
 		}
 		return 0;
 	}
@@ -229,7 +229,7 @@ public class JVPrincipal {
 	 */
 	static byte celdaSuroeste(int fila, int col) {
 		if (fila+1 < TAMAÑO_MUNDO && col-1 >= 0) {
-			return mundo[fila+1][col-1]; 	// Celda SO.
+			return espacioMundo[fila+1][col-1]; 	// Celda SO.
 		}
 		return 0;
 	}
@@ -243,7 +243,7 @@ public class JVPrincipal {
 	 */
 	static byte celdaSur(int fila, int col) {
 		if (fila+1 < TAMAÑO_MUNDO) {
-			return mundo[fila+1][col]; 	// Celda S.
+			return espacioMundo[fila+1][col]; 	// Celda S.
 		}
 		return 0;
 	}
@@ -257,7 +257,7 @@ public class JVPrincipal {
 	 */
 	static byte celdaSureste(int fila, int col) {
 		if (fila+1 < TAMAÑO_MUNDO && col+1 < TAMAÑO_MUNDO) {
-			return mundo[fila+1][col+1]; 	// Celda SE.
+			return espacioMundo[fila+1][col+1]; 	// Celda SE.
 		}
 		return 0;
 	}
@@ -271,7 +271,7 @@ public class JVPrincipal {
 	 */
 	static byte celdaEste(int fila, int col) {
 		if (col+1 < TAMAÑO_MUNDO) {
-			return mundo[fila][col+1]; 		// Celda E.
+			return espacioMundo[fila][col+1]; 		// Celda E.
 		}
 		return 0;
 	}
@@ -285,7 +285,7 @@ public class JVPrincipal {
 	 */
 	static byte celdaNoreste(int fila, int col) {
 		if (fila-1 >= 0 && col+1 < TAMAÑO_MUNDO) {
-			return mundo[fila-1][col+1]; 		// Celda NE.
+			return espacioMundo[fila-1][col+1]; 		// Celda NE.
 		}
 		return 0;
 	}
@@ -299,7 +299,7 @@ public class JVPrincipal {
 	 */
 	static byte celdaNorte(int fila, int col) {
 		if (fila-1 >= 0) {
-			return mundo[fila-1][col]; 		// Celda N.
+			return espacioMundo[fila-1][col]; 		// Celda N.
 		}
 		return 0;
 	}
@@ -313,7 +313,7 @@ public class JVPrincipal {
 	 */
 	static byte celdaNoroeste(int fila, int col) {
 		if (fila-1 >= 0 && col-1 >= 0) {
-			return mundo[fila-1][col-1]; 		// Celda NO.
+			return espacioMundo[fila-1][col-1]; 		// Celda NO.
 		}
 		return 0;
 	}
@@ -346,12 +346,12 @@ public class JVPrincipal {
 				actualizarCelda(nuevoEstado, i, j, vecinas);
 			}
 		}
-		mundo = nuevoEstado;
+		espacioMundo = nuevoEstado;
 	}
 
 	/**
 	 * Apartado 8+:
-	 * Obtiene una submatriz con las celdas adyacenta a cualquier celda del mundo.
+	 * Obtiene una submatriz con las celdas adyacentes a cualquier celda del mundo.
 	 * @param fila de la celda central de la submatriz
 	 * @param col de la celda central de la submatriz
 	 * @return matrizCopia
@@ -365,61 +365,67 @@ public class JVPrincipal {
 
 		// Zona central.
 		if (fila-1 >= 0 && fila+1 < TAMAÑO_MUNDO && col-1 >= 0 && col+1 < TAMAÑO_MUNDO) {
-			System.arraycopy(mundo[fila-1], col-1, matrizCopia[0], 0, 3);
-			System.arraycopy(mundo[fila], col-1, matrizCopia[1], 0, 3);
-			System.arraycopy(mundo[fila+1], col-1, matrizCopia[2], 0, 3);
+			System.arraycopy(espacioMundo[fila-1], col-1, matrizCopia[0], 0, 3);
+			System.arraycopy(espacioMundo[fila], col-1, matrizCopia[1], 0, 3);
+			System.arraycopy(espacioMundo[fila+1], col-1, matrizCopia[2], 0, 3);
 			return matrizCopia;
 		}
 
-		// 4 bandas.
+		// Banda periférica superior.
 		if (fila == 0 && col-1 >= 0 && col+1 < TAMAÑO_MUNDO)	{
-			System.arraycopy(mundo[fila], col-1, matrizCopia[1], 0, 3);
-			System.arraycopy(mundo[fila+1], col-1, matrizCopia[2], 0, 3);
+			System.arraycopy(espacioMundo[fila], col-1, matrizCopia[1], 0, 3);
+			System.arraycopy(espacioMundo[fila+1], col-1, matrizCopia[2], 0, 3);
 			return matrizCopia;
 		}
-
+		
+		// Banda periférica inferior.
 		if (fila == TAMAÑO_MUNDO-1 && col-1 >= 0 && col+1 < TAMAÑO_MUNDO) {
-			System.arraycopy(mundo[fila-1], col-1, matrizCopia[0], 0, 3);
-			System.arraycopy(mundo[fila], col-1, matrizCopia[1], 0, 3);
+			System.arraycopy(espacioMundo[fila-1], col-1, matrizCopia[0], 0, 3);
+			System.arraycopy(espacioMundo[fila], col-1, matrizCopia[1], 0, 3);
 			return matrizCopia;
 		}
-
+		
+		// Banda periférica izquierda.
 		if (col == 0 && fila-1 >= 0 && fila+1 < TAMAÑO_MUNDO) {
-			System.arraycopy(mundo[fila-1], col, matrizCopia[0], 1, 2);
-			System.arraycopy(mundo[fila], col, matrizCopia[1], 1, 2);
-			System.arraycopy(mundo[fila+1], col, matrizCopia[2], 1, 2);
+			System.arraycopy(espacioMundo[fila-1], col, matrizCopia[0], 1, 2);
+			System.arraycopy(espacioMundo[fila], col, matrizCopia[1], 1, 2);
+			System.arraycopy(espacioMundo[fila+1], col, matrizCopia[2], 1, 2);
 			return matrizCopia;
 		}
-
+		
+		// Banda periférica derecha.
 		if (col == TAMAÑO_MUNDO-1 && fila-1 >= 0 && fila+1 < TAMAÑO_MUNDO) {
-			System.arraycopy(mundo[fila-1], col-1, matrizCopia[0], 0, 2);
-			System.arraycopy(mundo[fila], col-1, matrizCopia[1], 0, 2);
-			System.arraycopy(mundo[fila+1], col-1, matrizCopia[2], 0, 2);
+			System.arraycopy(espacioMundo[fila-1], col-1, matrizCopia[0], 0, 2);
+			System.arraycopy(espacioMundo[fila], col-1, matrizCopia[1], 0, 2);
+			System.arraycopy(espacioMundo[fila+1], col-1, matrizCopia[2], 0, 2);
 			return matrizCopia;
 		}
 
-		// 4 Esquinas
+		// Esquinas superior izquierda.
 		if (fila == 0 && col == 0)	{
-			System.arraycopy(mundo[fila], col, matrizCopia[1], 1, 2);
-			System.arraycopy(mundo[fila+1], col, matrizCopia[2], 1, 2);
+			System.arraycopy(espacioMundo[fila], col, matrizCopia[1], 1, 2);
+			System.arraycopy(espacioMundo[fila+1], col, matrizCopia[2], 1, 2);
 			return matrizCopia;
 		}
 
+		// Esquinas superior derecha.
 		if (fila == 0 && col == TAMAÑO_MUNDO-1)	{
-			System.arraycopy(mundo[fila], col-1, matrizCopia[1], 0, 2);
-			System.arraycopy(mundo[fila+1], col-1, matrizCopia[2], 0, 2);
+			System.arraycopy(espacioMundo[fila], col-1, matrizCopia[1], 0, 2);
+			System.arraycopy(espacioMundo[fila+1], col-1, matrizCopia[2], 0, 2);
 			return matrizCopia;
 		}
 
+		// Esquinas inferior izquierda.
 		if (fila == TAMAÑO_MUNDO-1 && col == TAMAÑO_MUNDO-1)	{
-			System.arraycopy(mundo[fila-1], col-1, matrizCopia[1], 0, 2);
-			System.arraycopy(mundo[fila], col-1, matrizCopia[2], 0, 2);
+			System.arraycopy(espacioMundo[fila-1], col-1, matrizCopia[1], 0, 2);
+			System.arraycopy(espacioMundo[fila], col-1, matrizCopia[2], 0, 2);
 			return matrizCopia;
 		}
 
+		// Esquinas inferior derecha.
 		if (fila == TAMAÑO_MUNDO-1 && col == 0)	{
-			System.arraycopy(mundo[fila-1], col, matrizCopia[1], 1, 2);
-			System.arraycopy(mundo[fila], col, matrizCopia[2], 1, 2);
+			System.arraycopy(espacioMundo[fila-1], col, matrizCopia[1], 1, 2);
+			System.arraycopy(espacioMundo[fila], col, matrizCopia[2], 1, 2);
 			return matrizCopia;
 		}
 
@@ -433,7 +439,7 @@ public class JVPrincipal {
 	 */
 	static void cargarMundoDemo() {
 		// En este array los 0 indican celdas con células muertas y los 1 vivas.
-		mundo = new byte[][] { 
+		espacioMundo = new byte[][] { 
 			{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
 			{ 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
 			{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0 }, //
