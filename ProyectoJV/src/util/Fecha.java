@@ -16,7 +16,6 @@ import java.util.GregorianCalendar;
 
 public class Fecha implements Serializable {
 
-	private static final long serialVersionUID = 1L;
 	private Calendar calendario;
 
 	public Fecha(int año, int mes, int dia) {
