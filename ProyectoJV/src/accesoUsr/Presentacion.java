@@ -1,5 +1,3 @@
-package accesoUsr;
-
 /** Proyecto: Juego de la vida.
  *  Gestiona la interacción con el usuario y la simulación del JV.  
  *  @since: prototipo1.2
@@ -7,8 +5,12 @@ package accesoUsr;
  *  @version: 1.2 - 2018/03/08 
  *  @author: ajp
  */
+
+package accesoUsr;
+
 import java.util.Scanner;
 import accesoDatos.Datos;
+import accesoDatos.DatosException;
 import modelo.*;
 
 public class Presentacion {
@@ -16,7 +18,7 @@ public class Presentacion {
 	private static Datos datos;
 	
 	private static final int MAX_INTENTOS_FALLIDOS = 3;
-	private Usuario usrEnSesion;
+	private static Usuario usrEnSesion;
 	
 	private static byte[][] espacioMundo;
 	private static final int TAMAÑO_MUNDO = 12;
@@ -28,8 +30,13 @@ public class Presentacion {
 	 * Constructor
 	 * @param datos
 	 */
-	public Presentacion(Datos datos) {
-		this.datos = datos;
+	public Presentacion() {
+		try {
+			datos = new Datos();
+		} 
+		catch (DatosException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Usuario getUsrEnSesion() {
@@ -40,7 +47,7 @@ public class Presentacion {
 	 * Controla el acceso de usuario.
 	 * @return true si la sesión se inicia correctamente.
 	 */
-	public boolean inicioSesionCorrecto() {
+	public boolean iniciarSesionCorrecta() {
 		Scanner teclado = new Scanner(System.in);	// Entrada por consola.
 		int intentosPermitidos = MAX_INTENTOS_FALLIDOS;
 
@@ -48,18 +55,26 @@ public class Presentacion {
 			// Pide usuario y contraseña.
 			System.out.print("Introduce el nif de usuario: ");
 			String nif = teclado.nextLine();
-			System.out.print("Introduce clavapellidose acceso: ");
+			System.out.print("Introduce clava de acceso: ");
 			String clave = teclado.nextLine();
-
-			// Busca usuario coincidente con las credenciales.
-			usrEnSesion = datos.buscarUsuario(nif);
-						
-			if (usrEnSesion != null 
-					&& usrEnSesion.getClaveAcceso().equals(new ClaveAcceso(clave))) {
-				return true;
-			} else {
+			
+			try {
+				// Busca usuario coincidente con las credenciales.
+				usrEnSesion = datos.obtenerUsuario(nif);
+				
+				// Encripta clave tecleada utilizando un objeto temporal.
+				// que ejecutaráDatos datos automáticamente el método privado.
+				if (usrEnSesion != null 
+						&& usrEnSesion.getClaveAcceso().equals(new ClaveAcceso(clave))) {
+					return true;
+				} else {
+					intentosPermitidos--;
+					System.out.print("Credenciales incorrectas: ");
+					System.out.println("Quedan " + intentosPermitidos + " intentos... ");
+				}
+			} catch (ModeloException | DatosException e) {
 				intentosPermitidos--;
-				System.out.print("Credenciales incorrectas: ");
+				System.out.print("Credenciales incorrectas-: ");
 				System.out.println("Quedan " + intentosPermitidos + " intentos... ");
 			} 
 		} while (intentosPermitidos > 0);
@@ -129,7 +144,7 @@ public class Presentacion {
 				}
 
 				int vecinas = 0;							
-				vecinas += espacioMundo[filaSuperior][colAnterior];		    // Celda NO
+				vecinas += espacioMundo[filaSuperior][colAnterior];		// Celda NO
 				vecinas += espacioMundo[filaSuperior][j];					// Celda N		NO | N | NE
 				vecinas += espacioMundo[filaSuperior][colPosterior];		// Celda NE   	-----------
 				vecinas += espacioMundo[i][colPosterior];					// Celda E		 O | * | E
@@ -137,6 +152,33 @@ public class Presentacion {
 				vecinas += espacioMundo[filaInferior][j]; 					// Celda S		SO | S | SE
 				vecinas += espacioMundo[filaInferior][colAnterior]; 		// Celda SO 
 				vecinas += espacioMundo[i][colAnterior];					// Celda O           			                                     	
+
+				actualizarCelda(nuevoEstado, i, j, vecinas);
+			}
+		}
+		espacioMundo = nuevoEstado;
+	}
+
+	/**
+	 * Apartado 8+:
+	 * Actualiza el estado almacenado del Juego de la Vida.
+	 * Las celdas periféricas son los límites absolutos.
+	 * El mundo representado sería plano cerrado con límites para células de dos dimensiones.
+	 */
+	private void actualizarMundoPlano2()  {     					
+		byte[][] nuevoEstado = new byte[TAMAÑO_MUNDO][TAMAÑO_MUNDO];
+
+		for (int i = 0; i < TAMAÑO_MUNDO; i++) {
+			for (int j = 0; j < TAMAÑO_MUNDO; j++) {
+				int vecinas = 0;							
+				vecinas += celdaNoroeste(i, j);		
+				vecinas += celdaNorte(i, j);		// 		NO | N | NE
+				vecinas += celdaNoreste(i, j);		//    	-----------
+				vecinas += celdaEste(i, j);			// 		 O | * | E
+				vecinas += celdaSureste(i, j);		// 	  	----------- 
+				vecinas += celdaSur(i, j); 			// 		SO | S | SE
+				vecinas += celdaSuroeste(i, j); 	  
+				vecinas += celdaOeste(i, j);		          			                                     	
 
 				actualizarCelda(nuevoEstado, i, j, vecinas);
 			}
@@ -164,32 +206,6 @@ public class Presentacion {
 		if (vecinas == 2 && espacioMundo[fila][col] == 1) {
 			nuevoEstado[fila][col] = 1; 				// Se mantiene viva...
 		}	
-	}
-
-	/**
-	 * Actualiza el estado almacenado del Juego de la Vida.
-	 * Las celdas periféricas son los límites absolutos.
-	 * El mundo representado sería plano cerrado con límites para células de dos dimensiones.
-	 */
-	private void actualizarMundoPlano2()  {     					
-		byte[][] nuevoEstado = new byte[TAMAÑO_MUNDO][TAMAÑO_MUNDO];
-
-		for (int i = 0; i < TAMAÑO_MUNDO; i++) {
-			for (int j = 0; j < TAMAÑO_MUNDO; j++) {
-				int vecinas = 0;							
-				vecinas += celdaNoroeste(i, j);		
-				vecinas += celdaNorte(i, j);		// 		NO | N | NE
-				vecinas += celdaNoreste(i, j);		//    	-----------
-				vecinas += celdaEste(i, j);			// 		 O | * | E
-				vecinas += celdaSureste(i, j);		// 	  	----------- 
-				vecinas += celdaSur(i, j); 			// 		SO | S | SE
-				vecinas += celdaSuroeste(i, j); 	  
-				vecinas += celdaOeste(i, j);		          			                                     	
-
-				actualizarCelda(nuevoEstado, i, j, vecinas);
-			}
-		}
-		espacioMundo = nuevoEstado;
 	}
 
 	/**
@@ -411,6 +427,7 @@ public class Presentacion {
 	 * Ejecuta una simulación del juego de la vida en la consola.
 	 */
 	public void arrancarSimulacion() {
+		cargarMundoDemo();
 		int generacion = 0; 
 		do {
 			System.out.println("\nGeneración: " + generacion);

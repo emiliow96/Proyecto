@@ -1,29 +1,38 @@
-package modelo;
-
-/** Proyecto: Juego de la vida.
- *  Implementa el concepto de ClaveAcceso según el modelo1.2.
+/** 
+ *  Proyecto: Juego de la vida.
+ *  Implementa el concepto de ClaveAcceso según el modelo 2.
  *  Utiliza un string para representar el texto del ClaveAcceso.  
  *  @since: prototipo1.2
  *  @source: ClaveAcceso.java 
- *  @version: 1.2 - 2018/02/14 
+ *  @version: 2.0 - 2018/02/14 
  *  @author: ajp
  */
-public class ClaveAcceso {
+
+package modelo;
+
+import java.io.Serializable;
+
+import util.Criptografia;
+import util.Formato;
+
+public class ClaveAcceso implements Serializable {
 	
 	private String texto;
 
 	/**
 	 * Constructor convencional. Utiliza método set...()
 	 * @param ClaveAcceso
+	 * @throws ModeloException 
 	 */
-	public ClaveAcceso(String texto) {
+	public ClaveAcceso(String texto) throws ModeloException {
 		setTexto(texto);
 	}
 
 	/**
 	 * Constructor defecto. Utiliza método set...()
+	 * @throws ModeloException 
 	 */
-	public ClaveAcceso() {
+	public ClaveAcceso() throws ModeloException {
 		this("Miau#0");
 	}
 
@@ -35,42 +44,14 @@ public class ClaveAcceso {
 		texto = new String(ClaveAcceso.texto);
 	}
 
-	public String getTexto() {
-		return texto;
-	}
-
-	public void setTexto(String texto) {
+	public void setTexto(String texto) throws ModeloException {
 		assert texto != null;
 		if (textoValido(texto)) {
-			this.texto = encriptarCesar(texto);
+			this.texto = Criptografia.cesar(texto);
 		}
-	}
-
-	/**
-	 * Encripta el texto de la contraseña con método de cesar.
-	 * Asume desplazamiento fijo de 4.
-	 * @param claveEnClaro
-	 * @return texto de ClaveEncriptada
-	 */
-	private String encriptarCesar(String claveEnClaro) {
-		String alfabetoNormal = "abcdefghijklmnñopqrstuvwxyz"
-				+ "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
-				+ "0123456789"
-				+ "$%*+-_#";
-
-		String alfabetoDesplazado = "efghijklmnñopqrstuvwxyz"
-				+ "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
-				+ "0123456789"
-				+ "$%*+-_#"
-				+ "abcd";
-
-		StringBuilder ClaveEncriptada = new StringBuilder();
-
-		for (int i = 0; i < claveEnClaro.length(); i++) {
-			ClaveEncriptada.append(alfabetoDesplazado.charAt(
-					alfabetoNormal.indexOf(claveEnClaro.charAt(i))));
+		else {
+			throw new ModeloException("ClaveAcceso: formato no válido.");
 		}
-		return ClaveEncriptada.toString();
 	}
 
 	/**
@@ -79,8 +60,12 @@ public class ClaveAcceso {
 	 * @return true si cumple.
 	 */
 	private boolean textoValido(String texto) {
-			return	texto.matches("([\\wñÑ$*-+&!?#]){5,}");
+			return	texto.matches(Formato.PATRON_CONTRASEÑA2);
 		}
+	
+	public String getTexto() {
+		return texto;
+	}
 	
 	/**
 	 * hashcode() complementa al método equals y sirve para comparar objetos de forma 

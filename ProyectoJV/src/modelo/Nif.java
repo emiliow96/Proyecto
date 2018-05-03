@@ -1,29 +1,39 @@
-package modelo;
-
-/** Proyecto: Juego de la vida.
- *  Implementa el concepto de Nif según el modelo1.2.
+/** 
+ *  Proyecto: Juego de la vida.
+ *  Implementa el concepto de Nif según el modelo 2.
  *  Utiliza un string para representar el texto del nif.  
  *  @since: prototipo1.2
  *  @source: Nif.java 
- *  @version: 1.2 - 2018/02/14 
+ *  @version: 2.0 - 2018/02/14 
  *  @author: ajp
  */
-public class Nif {
+
+package modelo;
+
+import java.io.Serializable;
+
+import util.Formato;
+
+public class Nif implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	private String texto;
 
 	/**
 	 * Constructor convencional. Utiliza método set...()
 	 * @param nif
+	 * @throws ModeloException 
 	 */
-	public Nif(String texto) {
+	public Nif(String texto) throws ModeloException {
 		setTexto(texto);
 	}
 
 	/**
 	 * Constructor defecto. Utiliza método set...()
+	 * @throws ModeloException 
 	 */
-	public Nif() {
-		this("00000000A");
+	public Nif() throws ModeloException {
+		this("00000000T");
 	}
 
 	/**
@@ -34,14 +44,13 @@ public class Nif {
 		texto = new String(nif.texto);
 	}
 
-	public String getTexto() {
-		return texto;
-	}
-
-	public void setTexto(String texto) {
+	public void setTexto(String texto) throws ModeloException {
 		assert texto != null;
-		if (textoValido(texto)) {
+		if (textoValido(texto) && letraNIFValida(texto)) {
 			this.texto = texto;
+		}
+		else {
+			throw new ModeloException("Nif: formato o letra no válido.");
 		}
 	}
 
@@ -51,7 +60,24 @@ public class Nif {
 	 * @return true si cumple.
 	 */
 	private boolean textoValido(String texto) {
-		return	texto.matches("^[\\d]{8}[BCDEFGHJKLMNPQRSTUVWXYZA]$");
+		return	texto.matches(Formato.PATRON_NIF);
+	}
+	
+	/**
+	 * Comprueba la validez de la letra de un NIF
+	 * @param texto del NIF
+	 * @return true si la letra es correcta.
+	 */
+	private boolean letraNIFValida(String texto) {
+		int numeroNIF = Integer.parseInt(texto.substring(0,8));
+		if (texto.charAt(8) == "TRWAGMYFPDXBNJZSQVHLCKE".charAt(numeroNIF % 23)) {
+			return true;
+		}
+		return false;
+	} 
+	
+	public String getTexto() {
+		return texto;
 	}
 	
 	/**
@@ -97,6 +123,7 @@ public class Nif {
 		// Utiliza el constructor copia.
 		return new Nif(this);
 	}
+	
 	@Override
 	public String toString() {
 		return texto;

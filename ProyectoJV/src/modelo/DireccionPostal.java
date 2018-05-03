@@ -1,26 +1,35 @@
-package modelo;
-/** Proyecto: Juego de la vida.
- *  Implementa el concepto de direccion postal según el modelo1.2.
+/** 
+ *  Proyecto: Juego de la vida.
+ *  Implementa el concepto de direccion postal según el modelo 2.
  *  Utiliza un varios string para representar los distintos campos.  
  *  @since: prototipo1.2
  *  @source: DireccionPostal.java 
- *  @version: 1.2 - 2018/02/14 
+ *  @version: 2.0 - 2018/02/14 
  *  @author: ajp
  */
-public class DireccionPostal {
+
+package modelo;
+
+import java.io.Serializable;
+
+import util.Formato;
+
+public class DireccionPostal implements Serializable  {
+	
+	private static final long serialVersionUID = 1L;
 	private String calle;
 	private String numero;
 	private String cp;
 	private String poblacion;
 
-	public DireccionPostal(String calle, String numero, String cp, String poblacion) {
+	public DireccionPostal(String calle, String numero, String cp, String poblacion) throws ModeloException {
 		setCalle(calle);
 		setNumero(numero);
 		setCp(cp);
 		setPoblacion(poblacion);
 	}
 
-	public DireccionPostal() {
+	public DireccionPostal() throws ModeloException {
 		this("Calle", "00", "00000", "Población");
 	}
 
@@ -31,13 +40,12 @@ public class DireccionPostal {
 		poblacion = new String(dp.poblacion);
 	}
 
-	public String getCalle() {
-		return calle;
-	}
-
-	public void setCalle(String calle) {
+	public void setCalle(String calle) throws ModeloException {
 		if  (calleValida(calle)) {
 			this.calle = calle;
+		}
+		else {
+			throw new ModeloException("DireccionPostal: calle no válida.");
 		}
 	}
 
@@ -48,16 +56,15 @@ public class DireccionPostal {
 	 */
 	private boolean calleValida(String calle) {
 		assert calle != null;
-		return	calle.matches("[A-ZÑÁÉÍÓÚa-zñáéíóú/\\d ]+");
+		return	calle.matches(Formato.PATRON_NOMBRE_VIA);
 	}
 
-	public String getNumero() {
-		return numero;
-	}
-
-	public void setNumero(String numero) {
+	public void setNumero(String numero) throws ModeloException {
 		if (numeroValido(numero)) {
 			this.numero = numero;
+		}
+		else {
+			throw new ModeloException("DireccionPostal: numero no válido.");
 		}
 	}
 
@@ -68,16 +75,15 @@ public class DireccionPostal {
 	 */
 	private boolean numeroValido(String numero) {
 		assert numero != null;
-		return	numero.matches("[\\w]+");
+		return	numero.matches(Formato.PATRON_NUMERO_POSTAL);
 	}
 
-	public String getCp() {
-		return cp;
-	}
-
-	public void setCp(String cp) {
+	public void setCp(String cp) throws ModeloException {
 		if (cpValido(cp)) {
 			this.cp = cp;
+		}
+		else {
+			throw new ModeloException("DireccionPostal: cp no válido.");
 		}
 	}
 
@@ -91,13 +97,12 @@ public class DireccionPostal {
 		return	cp.matches("[\\d]{5}");
 	}
 
-	public String getPoblacion() {
-		return poblacion;
-	}
-
-	public void setPoblacion(String poblacion) {
+	public void setPoblacion(String poblacion) throws ModeloException {
 		if (poblacionValida(poblacion)) {
 			this.poblacion = poblacion;
+		}
+		else {
+			throw new ModeloException("DireccionPostal: poblacion no válido.");
 		}
 	}
 
@@ -108,9 +113,25 @@ public class DireccionPostal {
 	 */
 	private boolean poblacionValida(String poblacion) {
 		assert poblacion != null;
-		return	poblacion.matches("[A-ZÑÁÉÍÓÚa-zñáéíóú ]+");
+		return	poblacion.matches(Formato.PATRON_TOPONIMO);
 	}
 
+	public String getCalle() {
+		return calle;
+	}
+	
+	public String getNumero() {
+		return numero;
+	}
+	
+	public String getCp() {
+		return cp;
+	}
+	
+	public String getPoblacion() {
+		return poblacion;
+	}
+	
 	/**
 	 * hashCode() complementa al método equals y sirve para comparar objetos de forma 
 	 * rápida en estructuras Hash. 
@@ -134,7 +155,7 @@ public class DireccionPostal {
 	 * Son de la misma clase.
 	 * Tienen los mismos valores en los atributos; o son el mismo objeto.
 	 * @return falso si no cumple las condiciones.
-	*/
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && getClass() == obj.getClass()) {
@@ -145,23 +166,23 @@ public class DireccionPostal {
 					&& cp.equals(((DireccionPostal)obj).cp) 
 					&& numero.equals(((DireccionPostal)obj).numero) 
 					&& poblacion.equals(((DireccionPostal)obj).poblacion)
-				) {
+					) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Genera un clon del propio objeto realizando una copia profunda.
 	 * @return el objeto clonado.
-	*/
+	 */
 	@Override
 	public Object clone() {
 		// Utiliza el constructor copia.
 		return new DireccionPostal(this);
 	}
-	
+
 	@Override
 	public String toString() {
 		return calle + ", " + numero + ", " + cp + ", " + poblacion;

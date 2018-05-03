@@ -1,61 +1,41 @@
-package modelo;
-
-/** Proyecto: Juego de la vida.
- *  Implementa el concepto de Usuario según el modelo1.
- *  En esta versión no se han aplicado la mayoría de los estándares 
- *  de diseño OO dirigidos a conseguir un "código limpio". 
- *  La implementación es básica con el fin ilustrar 
- *  cómo se evoluciona desde un "código malo".
- *  Se pueden detectar varios defectos y antipatrones de diseño:
+/** 
+ *  Proyecto: Juego de la vida.
+ *  Implementa el concepto de Usuario según el modelo 2.
  *  @since: prototipo1.0
  *  @source: Usuario.java 
- *  @version: 1.2 - 2018/02/14 
+ *  @version: 2.0 - 2018/03/16 
  *  @author: ajp
  */
 
+package modelo;
+
 import util.Fecha;
 
-public class Usuario {
+public class Usuario  extends Persona {
 
 	public enum RolUsuario {
 		INVITADO, 
 		NORMAL, 
 		ADMINISTRADOR
 	}
-
-	private Nif nif;
-	private String nombre;
-	private String apellidos;
+	private static final long serialVersionUID = 1L;
 	private String idUsr;
-	private DireccionPostal domicilio;
-	private Correo correo;
-	private Fecha fechaNacimiento;
 	private Fecha fechaAlta;
 	private ClaveAcceso claveAcceso;
 	private RolUsuario rol;
 
 	/**
 	 * Constructor convencional. Utiliza métodos set...()
-	 * @param nif
-	 * @param nombre
-	 * @param apellidos
-	 * @param domicilio
-	 * @param correo
-	 * @param fechaNacimiento
 	 * @param fechaAlta
 	 * @param claveAcceso
 	 * @param rol
+	 * @throws ModeloException 
 	 */
 	public Usuario(Nif nif, String nombre, String apellidos,
 			DireccionPostal domicilio, Correo correo, Fecha fechaNacimiento,
-			Fecha fechaAlta, ClaveAcceso claveAcceso, RolUsuario rol) {
-		setNif(nif);
-		setNombre(nombre);
-		setApellidos(apellidos);
+			Fecha fechaAlta, ClaveAcceso claveAcceso, RolUsuario rol) throws ModeloException {
+		super(nif, nombre, apellidos, domicilio, correo, fechaNacimiento);
 		generarIdUsr();
-		setDomicilio(domicilio);
-		setCorreo(correo);
-		setFechaNacimiento(fechaNacimiento);
 		setFechaAlta(fechaAlta);
 		setClaveAcceso(claveAcceso);
 		setRol(rol);
@@ -63,8 +43,9 @@ public class Usuario {
 
 	/**
 	 * Constructor por defecto. Reenvía al constructor convencional.
+	 * @throws ModeloException 
 	 */
-	public Usuario() {
+	public Usuario() throws ModeloException {
 		this(new Nif(), "Nombre", "Apellido Apellido", 
 				new DireccionPostal(), 
 				new Correo(), 
@@ -78,13 +59,8 @@ public class Usuario {
 	 * @param usr
 	 */
 	public Usuario(Usuario usr) {
-		nif = new Nif(usr.nif);
-		nombre = new String(usr.nombre);
-		apellidos = new String(usr.apellidos);
+		super(usr);
 		idUsr = new String(usr.idUsr);
-		domicilio = new DireccionPostal(usr.domicilio);
-		correo = new Correo(usr.correo);
-		fechaNacimiento = new Fecha(usr.fechaNacimiento);
 		fechaAlta = new Fecha(usr.fechaAlta);
 		claveAcceso = new ClaveAcceso(usr.claveAcceso);
 		rol = usr.rol;
@@ -117,134 +93,56 @@ public class Usuario {
 		idUsr = idUsr.substring(0, 4) + alfabetoNifDesplazado.charAt(alfabetoNif.indexOf(idUsr.charAt(4)));
 	}
 
-	/**
-	 * Comprueba validez del nombre.
-	 * @param nombre.
-	 * @return true si cumple.
-	 */
-	private boolean nombreValido(String nombre) {
-		assert nombre != null;
-		return	nombre.matches("^[A-ZÑÁÉÍÓÚ][a-zñáéíóú]+");
-	}
-
-	/**
-	 * Comprueba validez de los apellidos.
-	 * @param apellidos.
-	 * @return true si cumple.
-	 */
-	private boolean apellidosValidos(String apellidos) {
-		assert apellidos != null;
-		return apellidos.matches("[A-ZÑÁÉÍÓÚ][a-zñáéíóú]+ [A-ZÑÁÉÍÓÚ][a-zñáéíóú]+");
-	}
-
-	/**
-	 * Comprueba validez de una dirección.
-	 * @param direccion.
-	 * @return true si cumplenull.
-	 */
-	private boolean direccionValida(String direccion) {
-		assert direccion != null;
-		return	direccion.matches("[A-ZÑÁÉÍÓÚa-zñáéíóú\\.,/ \\d]+");
-	}
-
-	/**
-	 * Comprueba validez de una fecha de nacimiento.
-	 * @param fechaNacimiento.
-	 * @return true si cumple.
-	 */
-	private boolean fechaNacimientoValida(Fecha fechaNacimiento) {
-		// Que sea fecha del pasado.
-		return true;
-	}
-
-	public Nif getNif() {
-		return nif;
-	}
-
-	public void setNif(Nif nif) {
-		assert nif != null;
-		this.nif = nif;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {	
-		if (nombreValido(nombre)) {
-			this.nombre = nombre;
-		}
-	}
-
-	public String getApellidos() {
-		return apellidos;
-	}
-
-	public void setApellidos(String apellidos) {
-		if (apellidosValidos(apellidos)) {
-			this.apellidos = apellidos;
-		}
-	}
-
-	public String getIdUsr() {
-		return idUsr;
-	}
-
-	public DireccionPostal getDomicilio() {
-		return domicilio;
-	}
-
-	public void setDomicilio(DireccionPostal domicilio) {
-		assert domicilio != null;
-		this.domicilio = domicilio;
-	}
-
-	public Correo getCorreo() {
-		return correo;
-	}
-
-	public void setCorreo(Correo correo) {
-		assert correo != null;
-		this.correo = correo;
-	}
-
-	public Fecha getFechaNacimiento() {
-		return fechaNacimiento;
-	}
-
-	public void setFechaNacimiento(Fecha fechaNacimiento) {
-		assert fechaNacimiento != null;
-		if (fechaNacimientoValida(fechaNacimiento)) {
-			this.fechaNacimiento = fechaNacimiento;
-		}
-	}
-	public Fecha getFechaAlta() {
-		return fechaAlta;
-	}
-
-	public void setFechaAlta(Fecha fechaAlta) {
+	public void setFechaAlta(Fecha fechaAlta) throws ModeloException {
 		assert fechaAlta != null;
 		this.fechaAlta = fechaAlta;
+		if (fechaAltaValida(fechaAlta)) {
+			this.fechaAlta = fechaAlta;
+		}
+		else {
+			throw new ModeloException("Persona: fecha alta no válida.");
+		}
 	}
-
-	public ClaveAcceso getClaveAcceso() {
-		return claveAcceso;
+	
+	/**
+	 * Comprueba validez de una fecha de alta.
+	 * @param fechaAlta.
+	 * @return true si cumple.
+	 */
+	private boolean fechaAltaValida(Fecha fechaAlta) {
+		// Debe ser hoy o fecha del pasado.
+		if (fechaAlta.compareTo(new Fecha())  <= 0 ) {
+			return true;
+		}
+		return false;
 	}
 
 	public void setClaveAcceso(ClaveAcceso claveAcceso) {
 		assert claveAcceso != null;
 		this.claveAcceso = claveAcceso;
 	}
-
-	public RolUsuario getRol() {
-		return rol;
-	}
-
+	
 	public void setRol(RolUsuario rol) {
 		assert rol != null;
 		this.rol = rol;
 	}
 	
+	public String getIdUsr() {
+		return idUsr;
+	}
+	
+	public Fecha getFechaAlta() {
+		return fechaAlta;
+	}
+	
+	public ClaveAcceso getClaveAcceso() {
+		return claveAcceso;
+	}
+
+	public RolUsuario getRol() {
+		return rol;
+	}
+
 	@Override
 	public Usuario clone() {
 		return new Usuario(this);	

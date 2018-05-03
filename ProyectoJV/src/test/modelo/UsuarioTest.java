@@ -3,7 +3,7 @@
  * Clase JUnit de prueba automatizada de las características de la clase Usuario según el modelo 2.
  * @since: prototipo2
  * @source: TestUsuario.java 
- * @version: 2.0 - 2017.03.21
+ * @version: 2.0 - 2018.04.21
  * @author: ajp
  */
 
@@ -18,6 +18,7 @@ import org.junit.Test;
 import modelo.ClaveAcceso;
 import modelo.Correo;
 import modelo.DireccionPostal;
+import modelo.ModeloException;
 import modelo.Nif;
 import modelo.Usuario;
 import modelo.Usuario.RolUsuario;
@@ -29,7 +30,7 @@ public class UsuarioTest {
 	
 	/**
 	 * Método que se ejecuta antes de cada @Test para preparar datos de prueba.
-	 * @throws ModeloException 
+	 * @throws DatosException 
 	 */
 	@Before
 	public void iniciarlizarDatosPrueba() {
@@ -41,7 +42,7 @@ public class UsuarioTest {
 					new Correo("luis@gmail.com"), new Fecha(2000, 03, 21),
 					new Fecha(2017,05,12), new ClaveAcceso(), RolUsuario.NORMAL);
 		} 
-		catch (Exception e) {
+		catch (ModeloException e) {
 			e.printStackTrace();
 		}
 	}
@@ -58,11 +59,14 @@ public class UsuarioTest {
 	// Test CON DATOS VALIDOS
 	@Test
 	public void testSetFechaAlta() {
+		
 		try {
 			usuario1.setFechaAlta(new Fecha(2012, 2, 9, 10, 9, 0));
+			assertEquals( usuario1.getFechaAlta(), new Fecha(2012, 2, 9, 10, 9, 0));
 		} 
-		catch (Exception e) { }
-		assertEquals( usuario1.getFechaAlta(), new Fecha(2012, 2, 9, 10, 9, 0));
+		catch (ModeloException e) { 
+			fail("No debe llegar aquí...");
+		}
 	}
 
 	@Test
@@ -71,7 +75,9 @@ public class UsuarioTest {
 			usuario1.setClaveAcceso(new ClaveAcceso("Hola#12"));
 			assertEquals(usuario1.getClaveAcceso(), new ClaveAcceso("Hola#12"));
 		} 
-		catch (Exception e) { } 
+		catch (ModeloException e) { 
+			fail("No debe llegar aquí...");
+		} 
 	}
 
 	@Test
@@ -82,7 +88,16 @@ public class UsuarioTest {
 	
 	@Test
 	public void testToString() {
-		assertNotNull(usuario2.toString());	
+		assertEquals(usuario2.toString(), "nif:             00000000T\n" + 
+				"nombre:          Luis\n" + 
+				"apellidos:       Pérez Ruiz\n" + 
+				"idUsr:           LPR0T\n" + 
+				"domicilio:       Roncal, 10, 30130, Murcia\n" + 
+				"correo:          luis@gmail.com\n" + 
+				"fechaNacimiento: 2000.03.21 - 00:00:00\n" + 
+				"fechaAlta:       2017.05.12 - 00:00:00\n" + 
+				"claveAcceso:     Pmezd8\n" + 
+				"rol:             NORMAL\n");
 	}
 
 	@Test
@@ -110,7 +125,6 @@ public class UsuarioTest {
 			fail("No debe llegar aquí...");
 		} 
 		catch (AssertionError e) { 
-			assertTrue(true);
 		}
 	}
 	
@@ -120,8 +134,17 @@ public class UsuarioTest {
 			usuario2.setFechaAlta(null);
 			fail("No debe llegar aquí...");
 		} 
-		catch (AssertionError | Exception e) {
-			assertTrue(true);
+		catch (AssertionError | ModeloException e) {	
+		}
+	}
+	
+	@Test
+	public void testValidarFechaAltaIncorrecta() {	
+		try {
+			usuario1.setFechaAlta(new Fecha(3020, 9, 10));
+			fail("No debe llegar aquí");
+		} 
+		catch (ModeloException e) {			
 		}
 	}
 	
@@ -131,8 +154,7 @@ public class UsuarioTest {
 			usuario1.setRol(null);
 			fail("No debe llegar aquí...");
 		} 
-		catch (AssertionError e) { 
-			assertTrue(true);
+		catch (AssertionError e) { 		
 		}
 	}
 	

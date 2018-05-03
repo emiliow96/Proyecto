@@ -1,29 +1,39 @@
-package modelo;
-
-/** Proyecto: Juego de la vida.
- *  Implementa el concepto de correo según el modelo1.2.
+/** 
+ *  Proyecto: Juego de la vida.
+ *  Implementa el concepto de correo según el modelo 2.
  *  Utiliza un string para representar el texto del correo.  
  *  @since: prototipo1.2
  *  @source: Correo.java 
- *  @version: 1.2 - 2018/02/14 
+ *  @version: 2.0 - 2018/02/14 
  *  @author: ajp
  */
-public class Correo {
+
+package modelo;
+
+import java.io.Serializable;
+
+import util.Formato;
+
+public class Correo implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	private String texto;
+	
 	/**
 	 * Constructor convencional. Utiliza método set...()
 	 * @param nif
+	 * @throws ModeloException 
 	 * @throws Exception 
 	 */
-	public Correo(String texto) {
+	public Correo(String texto) throws ModeloException {
 		setTexto(texto);
 	}
 
 	/**
 	 * Constructor defecto. Utiliza método set...()
-	 * @throws Exception 
+	 * @throws ModeloException 
 	 */
-	public Correo() {
+	public Correo() throws ModeloException {
 		this("correo@correo.com");
 	}
 
@@ -35,14 +45,13 @@ public class Correo {
 		texto = new String(correo.texto);
 	}
 
-	public String getTexto() {
-		return texto;
-	}
-
-	public void setTexto(String texto) {
+	public void setTexto(String texto) throws ModeloException {
 		assert texto != null;
 		if (formatoValido(texto) && correoAutentico()) {
 			this.texto = texto;
+		}
+		else {
+			throw new ModeloException("Correo: formato no válido.");
 		}
 	}
 
@@ -61,8 +70,11 @@ public class Correo {
 	 * @return true si cumple.
 	 */
 	private boolean formatoValido(String correo) {	
-		return	correo.matches("^[\\w-\\+]+(\\.[\\w-\\+]+)*@"
-				+ "[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+		return	correo.matches(Formato.PATRON_CORREO);
+	}
+	
+	public String getTexto() {
+		return texto;
 	}
 	
 	/**
