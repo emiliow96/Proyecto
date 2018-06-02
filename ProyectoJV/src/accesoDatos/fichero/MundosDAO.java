@@ -148,7 +148,7 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 	 * @throws DatosException - si no existe.
 	 */	
 	@Override
-	public Mundo obtener(String nombre) throws DatosException {
+	public obtenerMundo(String nombre) throws DatosException {
 		if (nombre != null) {
 			int posicion = obtenerPosicion(nombre);				// En base 1
 			if (posicion >= 0) {
@@ -160,6 +160,13 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 		}
 		return null;
 	}
+	
+	public obtenerTodosMundos() {
+		
+		for(int x=0;x<al.size();x++) {
+			  System.out.println(al.get(obtenerMundo()));
+			};
+		}
 	
 	/**
 	 *  Obtiene por búsqueda binaria, la posición que ocupa, o ocuparía,  un Mundo en 
