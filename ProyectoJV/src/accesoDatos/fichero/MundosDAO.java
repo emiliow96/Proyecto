@@ -203,7 +203,7 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 	 * @throws DatosException - si no existe.
 	 */
 	@Override
-	public Mundo obtener(Object obj) throws DatosException  {
+	public obtenerMundo(Object obj) throws DatosException  {
 		return this.obtener(((Mundo) obj).getNombre());
 	}
 	
